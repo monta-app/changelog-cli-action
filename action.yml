@@ -35,7 +35,6 @@ runs:
         chmod +x ./changelog-cli
       shell: bash
     - name: Run changelog cli
-      id: changelog
       env:
         CHANGELOG_SERVICE_NAME: ${{ inputs.service-name }}
         CHANGELOG_GITHUB_RELEASE: ${{ inputs.github-release }}
