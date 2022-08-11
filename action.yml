@@ -46,5 +46,6 @@ runs:
         CHANGELOG_OUTPUT: ${{ inputs.output }}
         CHANGELOG_SLACK_TOKEN: ${{ inputs.slack-token }}
         CHANGELOG_SLACK_CHANNEL_NAME: ${{ inputs.slack-channel }}
+        CHANGELOG_SLACK_CHANNELS: ${{ inputs.slack-channels }}
       run: ./changelog-cli
       shell: bash
