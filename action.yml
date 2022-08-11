@@ -21,7 +21,10 @@ inputs:
     required: true
   slack-channel:
     description: "Which slack channel should this be published to"
-    required: true
+    required: false
+  slack-channels:
+    description: "A comma-separated list of Slack channels to post the changelog to"
+    required: false
 runs:
   using: "composite"
   steps:
