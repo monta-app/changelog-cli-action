@@ -21,7 +21,10 @@ inputs:
     required: true
   slack-channel:
     description: "Which slack channel should this be published to"
-    required: true
+    required: false
+  slack-channels:
+    description: "A comma-separated list of Slack channels to post the changelog to"
+    required: false
 runs:
   using: "composite"
   steps:
@@ -43,5 +46,6 @@ runs:
         CHANGELOG_OUTPUT: ${{ inputs.output }}
         CHANGELOG_SLACK_TOKEN: ${{ inputs.slack-token }}
         CHANGELOG_SLACK_CHANNEL_NAME: ${{ inputs.slack-channel }}
+        CHANGELOG_SLACK_CHANNELS: ${{ inputs.slack-channels }}
       run: ./changelog-cli
       shell: bash
