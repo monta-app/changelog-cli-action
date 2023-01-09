@@ -34,7 +34,7 @@ runs:
         fetch-depth: 0
     - name: Download changelog cli
       run: |
-        curl -L -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.1.0/changelog-cli
+        curl -L -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.2.0/changelog-cli
         chmod +x ./changelog-cli
       shell: bash
     - name: Run changelog cli
