@@ -5,8 +5,12 @@ inputs:
     description: "Name of the service being released"
     required: true
   github-release:
-    description: "Create a jira release? (True or false)"
+    description: "Create a github release? (True or false)"
     required: true
+  github-update:
+    description: "Update the github release instead of creating it? (True or false)"
+    required: false
+    default: false
   github-token:
     description: "Github token used for generating releases"
     required: true
@@ -41,6 +45,7 @@ runs:
       env:
         CHANGELOG_SERVICE_NAME: ${{ inputs.service-name }}
         CHANGELOG_GITHUB_RELEASE: ${{ inputs.github-release }}
+        CHANGELOG_GITHUB_UPDATE: ${{ inputs.github-update }}
         CHANGELOG_GITHUB_TOKEN: ${{ inputs.github-token }}
         CHANGELOG_JIRA_APP_NAME: ${{ inputs.jira-app-name }}
         CHANGELOG_OUTPUT: ${{ inputs.output }}
