@@ -21,7 +21,7 @@ inputs:
     description: "Output mode (console,slack)"
     required: true
   version-mode:
-    description: "version format mode (SemVer,DateVer)
+    description: "version format mode (SemVer,DateVer)"
     required: false
     default: "DateVer"
   slack-token:
