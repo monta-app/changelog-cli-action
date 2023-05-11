@@ -14,6 +14,12 @@ inputs:
   github-token:
     description: "Github token used for generating releases"
     required: true
+  github-tag-pattern:
+    description: "Regex pattern used for matching tag patterns (group 1 in the pattern should match the 'version') - example `processor-(.*)`"
+    required: false
+  github-path-exclude-pattern:
+    description: "Regex pattern used for matching file patch for which commits should not be included. I.e. if a commit only contains files that match this, it will not be in the change log - example `^gateway/`"
+    required: false
   jira-app-name:
     description: "Name of the Jira app used for generating Jira issue links"
     required: false
@@ -42,7 +48,7 @@ runs:
         fetch-depth: 0
     - name: Download changelog cli
       run: |
-        curl -L -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.5.0/changelog-cli
+        curl -L -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.6.0/changelog-cli
         chmod +x ./changelog-cli
       shell: bash
     - name: Run changelog cli
@@ -53,6 +59,8 @@ runs:
         CHANGELOG_GITHUB_TOKEN: ${{ inputs.github-token }}
         CHANGELOG_JIRA_APP_NAME: ${{ inputs.jira-app-name }}
         CHANGELOG_VERSION_MODE: ${{ inputs.version-mode }}
+        CHANGELOG_GITHUB_TAG_PATTERN: ${{ inputs.github-tag-pattern }}
+        CHANGELOG_GITHUB_PATH_EXCLUDE_PATTERN: ${{ inputs.github-path-exclude-pattern }}
         CHANGELOG_OUTPUT: ${{ inputs.output }}
         CHANGELOG_SLACK_TOKEN: ${{ inputs.slack-token }}
         CHANGELOG_SLACK_CHANNEL_NAME: ${{ inputs.slack-channel }}
