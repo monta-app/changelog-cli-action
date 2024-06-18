@@ -48,6 +48,7 @@ runs:
         fetch-depth: 0
     - name: Install curl
       run: sudo apt-get install -y curl
+      shell: bash
     - name: Download changelog cli
       run: |
         curl -L -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.6.2/changelog-cli
