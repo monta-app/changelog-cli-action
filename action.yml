@@ -47,7 +47,7 @@ runs:
       with:
         fetch-depth: 0
     - name: Install curl
-      run: sudo apt-get install -y curl
+      run: sudo apt-get update && sudo apt-get install -y curl git
       shell: bash
     - name: Download changelog cli
       run: |
