@@ -11,6 +11,14 @@ It will:
 
 If you have done your commit messages using [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) the changelog will be formatted nicely in sections.
 
+## Architecture Support
+
+This action automatically detects the runner architecture and downloads the appropriate binary:
+- **x86_64** - Downloads `changelog-cli-x64`
+- **aarch64/arm64** - Downloads `changelog-cli-arm64`
+
+The action works on both standard x64 runners and ARM64 runners (e.g., `ubuntu-24.04-arm`).
+
 ## Example of Github workflow job
 
 ```yaml
