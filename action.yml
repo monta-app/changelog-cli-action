@@ -51,7 +51,19 @@ runs:
       shell: bash
     - name: Download changelog cli
       run: |
-        curl -L -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.8.0/changelog-cli
+        # Detect architecture
+        ARCH=$(uname -m)
+        if [ "$ARCH" = "x86_64" ]; then
+          BINARY_NAME="changelog-cli-x64"
+        elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+          BINARY_NAME="changelog-cli-arm64"
+        else
+          echo "Unsupported architecture: $ARCH"
+          exit 1
+        fi
+
+        echo "Downloading $BINARY_NAME for architecture $ARCH"
+        curl -L -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.9.1/$BINARY_NAME
         chmod +x ./changelog-cli
       shell: bash
     - name: Run changelog cli
