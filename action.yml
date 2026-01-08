@@ -63,7 +63,7 @@ runs:
         fi
 
         echo "Downloading $BINARY_NAME for architecture $ARCH"
-        curl -L -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.9.19/$BINARY_NAME
+        curl -L -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.9.20/$BINARY_NAME
         chmod +x ./changelog-cli
       shell: bash
     - name: Run changelog cli
