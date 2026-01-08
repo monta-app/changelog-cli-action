@@ -66,6 +66,16 @@ runs:
         curl -L -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.9.20/$BINARY_NAME
         chmod +x ./changelog-cli
       shell: bash
+    - name: Collect run information
+      run: |
+        RUN_LINK="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        TRIGGERED_BY="${{ github.actor }}"
+
+        echo "=== Run Information ==="
+        echo "Run Link: $RUN_LINK"
+        echo "Triggered By: $TRIGGERED_BY"
+        echo "======================="
+      shell: bash
     - name: Run changelog cli
       env:
         CHANGELOG_SERVICE_NAME: ${{ inputs.service-name }}
