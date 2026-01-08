@@ -11,6 +11,14 @@ It will:
 
 If you have done your commit messages using [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) the changelog will be formatted nicely in sections.
 
+## Job Information in Slack
+
+When posting to Slack, the action automatically includes metadata in a threaded message:
+- **Job URL**: Link to the GitHub Actions workflow run that generated the changelog
+- **Triggered By**: GitHub username of the person who triggered the workflow run (linked to their GitHub profile)
+
+This helps track which workflow generated each changelog and provides better traceability.
+
 ## Architecture Support
 
 This action automatically detects the runner architecture and downloads the appropriate binary:

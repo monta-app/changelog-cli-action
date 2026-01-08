@@ -66,16 +66,6 @@ runs:
         curl -L -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.9.24/$BINARY_NAME
         chmod +x ./changelog-cli
       shell: bash
-    - name: Collect run information
-      run: |
-        RUN_LINK="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        TRIGGERED_BY="${{ github.actor }}"
-
-        echo "=== Run Information ==="
-        echo "Run Link: $RUN_LINK"
-        echo "Triggered By: $TRIGGERED_BY"
-        echo "======================="
-      shell: bash
     - name: Run changelog cli
       env:
         CHANGELOG_SERVICE_NAME: ${{ inputs.service-name }}
@@ -90,5 +80,7 @@ runs:
         CHANGELOG_SLACK_TOKEN: ${{ inputs.slack-token }}
         CHANGELOG_SLACK_CHANNEL_NAME: ${{ inputs.slack-channel }}
         CHANGELOG_SLACK_CHANNELS: ${{ inputs.slack-channels }}
+        CHANGELOG_JOB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        CHANGELOG_TRIGGERED_BY: ${{ github.actor }}
       run: ./changelog-cli
       shell: bash
