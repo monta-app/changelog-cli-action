@@ -23,6 +23,12 @@ inputs:
   jira-app-name:
     description: "Name of the Jira app used for generating Jira issue links"
     required: false
+  jira-email:
+    description: "Email for JIRA API authentication (used for ticket validation)"
+    required: false
+  jira-token:
+    description: "JIRA API token for authentication (used for ticket validation)"
+    required: false
   output:
     description: "Output mode (console,slack)"
     required: true
@@ -85,6 +91,8 @@ runs:
         CHANGELOG_GITHUB_UPDATE: ${{ inputs.github-update }}
         CHANGELOG_GITHUB_TOKEN: ${{ inputs.github-token }}
         CHANGELOG_JIRA_APP_NAME: ${{ inputs.jira-app-name }}
+        CHANGELOG_JIRA_EMAIL: ${{ inputs.jira-email }}
+        CHANGELOG_JIRA_TOKEN: ${{ inputs.jira-token }}
         CHANGELOG_VERSION_MODE: ${{ inputs.version-mode }}
         CHANGELOG_GITHUB_TAG_PATTERN: ${{ inputs.github-tag-pattern }}
         CHANGELOG_GITHUB_PATH_EXCLUDE_PATTERN: ${{ inputs.github-path-exclude-pattern }}
