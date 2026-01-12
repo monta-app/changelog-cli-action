@@ -48,6 +48,9 @@ inputs:
   previous-image-tag:
     description: "Previous Docker image tag for rollback reference"
     required: false
+  stage:
+    description: "Deployment stage/environment (e.g., dev, staging, production)"
+    required: false
 runs:
   using: "composite"
   steps:
@@ -91,6 +94,7 @@ runs:
         CHANGELOG_SLACK_CHANNELS: ${{ inputs.slack-channels }}
         CHANGELOG_JOB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         CHANGELOG_TRIGGERED_BY: ${{ github.actor }}
+        CHANGELOG_STAGE: ${{ inputs.stage }}
         CHANGELOG_DOCKER_IMAGE: ${{ inputs.docker-image }}
         CHANGELOG_IMAGE_TAG: ${{ inputs.image-tag }}
         CHANGELOG_PREVIOUS_IMAGE_TAG: ${{ inputs.previous-image-tag }}

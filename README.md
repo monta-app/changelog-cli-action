@@ -19,14 +19,15 @@ When posting to Slack, the action automatically includes metadata in a threaded 
 
 This helps track which workflow generated each changelog and provides better traceability.
 
-## Docker Image Metadata
+## Deployment Metadata
 
-The action supports optional Docker image deployment metadata that can be included in Slack thread metadata:
+The action supports optional deployment metadata that can be included in Slack thread metadata:
+- **Stage/Environment**: Deployment stage (e.g., dev, staging, production)
 - **Docker Image**: Docker image repository URL
 - **Image Tag**: Current deployed image tag (e.g., commit SHA)
 - **Previous Image Tag**: Previous image tag for rollback reference
 
-This provides operations teams with deployment information directly in the changelog, making it easier to track what was deployed and enabling quick rollbacks if needed.
+This provides operations teams with deployment information directly in the changelog, making it easier to track what was deployed to which environment and enabling quick rollbacks if needed.
 
 ## Architecture Support
 
@@ -66,7 +67,7 @@ create-change-log:
         slack-channel: "#releases"
 ```
 
-### Example with Docker Image Metadata
+### Example with Deployment Metadata
 
 ```yaml
 create-change-log:
@@ -85,7 +86,8 @@ create-change-log:
         output: "slack"
         slack-token: ${{ secrets.SLACK_TOKEN }}
         slack-channel: "#releases"
-        # Docker deployment metadata (optional)
+        # Deployment metadata (optional)
+        stage: "production"
         docker-image: "123456789.dkr.ecr.us-east-1.amazonaws.com/my-service"
         image-tag: ${{ github.sha }}
         previous-image-tag: ${{ needs.deploy.outputs.previous_tag }}
