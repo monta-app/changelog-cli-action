@@ -39,6 +39,15 @@ inputs:
   slack-channels:
     description: "A comma-separated list of Slack channels to post the changelog to"
     required: false
+  docker-image:
+    description: "Docker image repository URL (e.g., 123456789.dkr.ecr.us-east-1.amazonaws.com/my-service)"
+    required: false
+  image-tag:
+    description: "Current Docker image tag being deployed (e.g., commit SHA)"
+    required: false
+  previous-image-tag:
+    description: "Previous Docker image tag for rollback reference"
+    required: false
 runs:
   using: "composite"
   steps:
@@ -82,5 +91,8 @@ runs:
         CHANGELOG_SLACK_CHANNELS: ${{ inputs.slack-channels }}
         CHANGELOG_JOB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         CHANGELOG_TRIGGERED_BY: ${{ github.actor }}
+        CHANGELOG_DOCKER_IMAGE: ${{ inputs.docker-image }}
+        CHANGELOG_IMAGE_TAG: ${{ inputs.image-tag }}
+        CHANGELOG_PREVIOUS_IMAGE_TAG: ${{ inputs.previous-image-tag }}
       run: ./changelog-cli
       shell: bash
