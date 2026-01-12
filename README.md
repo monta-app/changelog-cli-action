@@ -19,6 +19,16 @@ When posting to Slack, the action automatically includes metadata in a threaded 
 
 This helps track which workflow generated each changelog and provides better traceability.
 
+## Deployment Metadata
+
+The action supports optional deployment metadata that can be included in Slack thread metadata:
+- **Stage/Environment**: Deployment stage (e.g., dev, staging, production)
+- **Docker Image**: Docker image repository URL
+- **Image Tag**: Current deployed image tag (e.g., commit SHA)
+- **Previous Image Tag**: Previous image tag for rollback reference
+
+This provides operations teams with deployment information directly in the changelog, making it easier to track what was deployed to which environment and enabling quick rollbacks if needed.
+
 ## Architecture Support
 
 This action automatically detects the runner architecture and downloads the appropriate binary:
@@ -28,6 +38,8 @@ This action automatically detects the runner architecture and downloads the appr
 The action works on both standard x64 runners and ARM64 runners (e.g., `ubuntu-24.04-arm`).
 
 ## Example of Github workflow job
+
+### Basic Example
 
 ```yaml
 create-change-log:
@@ -53,6 +65,32 @@ create-change-log:
         slack-token: <token>
         # the slack channel to post to
         slack-channel: "#releases"
+```
+
+### Example with Deployment Metadata
+
+```yaml
+create-change-log:
+  needs: deploy
+  name: Create and publish change log
+  runs-on: ubuntu-latest
+  timeout-minutes: 5
+  steps:
+    - name: Run changelog cli action
+      uses: monta-app/changelog-cli-action@main
+      with:
+        service-name: "My Service"
+        github-release: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        jira-app-name: "myapp"
+        output: "slack"
+        slack-token: ${{ secrets.SLACK_TOKEN }}
+        slack-channel: "#releases"
+        # Deployment metadata (optional)
+        stage: "production"
+        docker-image: "123456789.dkr.ecr.us-east-1.amazonaws.com/my-service"
+        image-tag: ${{ github.sha }}
+        previous-image-tag: ${{ needs.deploy.outputs.previous_tag }}
 ```
 
 See further documentation of options in [action.yml](./action.yml)
