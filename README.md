@@ -26,8 +26,11 @@ The action supports optional deployment metadata that can be included in Slack t
 - **Docker Image**: Docker image repository URL
 - **Image Tag**: Current deployed image tag (e.g., commit SHA)
 - **Previous Image Tag**: Previous image tag for rollback reference
+- **Deployment Start Time**: Timestamp when deployment started (ISO 8601 format recommended)
+- **Deployment End Time**: Timestamp when deployment finished (ISO 8601 format recommended)
+- **Deployment URL**: Link to the deployment system (ArgoCD, Cloudflare, etc.)
 
-This provides operations teams with deployment information directly in the changelog, making it easier to track what was deployed to which environment and enabling quick rollbacks if needed.
+This provides operations teams with deployment information directly in the changelog, making it easier to track what was deployed to which environment, when it was deployed, and enabling quick rollbacks and regression debugging if needed.
 
 ## Architecture Support
 
@@ -91,6 +94,9 @@ create-change-log:
         docker-image: "123456789.dkr.ecr.us-east-1.amazonaws.com/my-service"
         image-tag: ${{ github.sha }}
         previous-image-tag: ${{ needs.deploy.outputs.previous_tag }}
+        deployment-start-time: ${{ needs.deploy.outputs.start_time }}
+        deployment-end-time: ${{ needs.deploy.outputs.end_time }}
+        deployment-url: "https://argocd.monta.app/applications/argocd/my-service-production"
 ```
 
 See further documentation of options in [action.yml](./action.yml)
