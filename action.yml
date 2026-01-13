@@ -57,6 +57,15 @@ inputs:
   stage:
     description: "Deployment stage/environment (e.g., dev, staging, production)"
     required: false
+  deployment-start-time:
+    description: "Timestamp when the deployment started (ISO 8601 format recommended)"
+    required: false
+  deployment-end-time:
+    description: "Timestamp when the deployment finished (ISO 8601 format recommended)"
+    required: false
+  deployment-url:
+    description: "URL to the deployment system (e.g., ArgoCD, Cloudflare)"
+    required: false
 runs:
   using: "composite"
   steps:
@@ -106,5 +115,8 @@ runs:
         CHANGELOG_DOCKER_IMAGE: ${{ inputs.docker-image }}
         CHANGELOG_IMAGE_TAG: ${{ inputs.image-tag }}
         CHANGELOG_PREVIOUS_IMAGE_TAG: ${{ inputs.previous-image-tag }}
+        CHANGELOG_DEPLOYMENT_START_TIME: ${{ inputs.deployment-start-time }}
+        CHANGELOG_DEPLOYMENT_END_TIME: ${{ inputs.deployment-end-time }}
+        CHANGELOG_DEPLOYMENT_URL: ${{ inputs.deployment-url }}
       run: ./changelog-cli
       shell: bash
