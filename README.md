@@ -64,7 +64,7 @@ create-change-log:
         # the slack token - use a reference to a secret
         slack-token: <token>
         # the slack channel to post to
-        slack-channel: "#releases"
+        slack-channel: "#info-releases"
 ```
 
 ### Example with Deployment Metadata
@@ -85,7 +85,7 @@ create-change-log:
         jira-app-name: "myapp"
         output: "slack"
         slack-token: ${{ secrets.SLACK_TOKEN }}
-        slack-channel: "#releases"
+        slack-channel: "#info-releases"
         # Deployment metadata (optional)
         stage: "production"
         docker-image: "123456789.dkr.ecr.us-east-1.amazonaws.com/my-service"
