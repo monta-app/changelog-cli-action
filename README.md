@@ -32,6 +32,27 @@ The action supports optional deployment metadata that can be included in Slack t
 
 This provides operations teams with deployment information directly in the changelog, making it easier to track what was deployed to which environment, when it was deployed, and enabling quick rollbacks and regression debugging if needed.
 
+## PR and JIRA Commenting
+
+The action can automatically comment on PRs and JIRA tickets when deploying to production:
+- **Comment on PRs**: Posts deployment information on all PRs included in the release
+- **Comment on JIRA**: Posts deployment information on all JIRA tickets referenced in commits
+
+**Requirements:**
+- Must set `stage: "production"`
+- Must provide `deployment-start-time` and `deployment-end-time`
+- Slack announcement must be posted (provides link in comments)
+- For JIRA commenting: Must provide JIRA credentials (`jira-email`, `jira-token`, `jira-app-name`)
+
+**Comment Format:**
+Comments include:
+- Release version
+- Full changelog of what was included
+- Deployment timing (human-readable format)
+- Links to changeset, deployment system, and Slack announcement
+
+This ensures stakeholders (PMs, designers, wider team) are notified when their work is deployed to production.
+
 ## Architecture Support
 
 This action automatically detects the runner architecture and downloads the appropriate binary:
@@ -98,5 +119,41 @@ create-change-log:
         deployment-end-time: ${{ needs.deploy.outputs.end_time }}
         deployment-url: "https://argocd.monta.app/applications/argocd/my-service-production"
 ```
+
+### Example with PR and JIRA Commenting
+
+```yaml
+create-change-log:
+  needs: deploy
+  name: Create and publish change log
+  runs-on: ubuntu-latest
+  timeout-minutes: 5
+  steps:
+    - name: Run changelog cli action
+      uses: monta-app/changelog-cli-action@main
+      with:
+        service-name: "My Service"
+        github-release: true
+        github-token: ${{ secrets.MONTA_BOT_TOKEN }}  # Use bot token for PR comments
+        jira-app-name: "myapp"
+        jira-email: ${{ secrets.JIRA_EMAIL }}
+        jira-token: ${{ secrets.JIRA_TOKEN }}
+        output: "slack"
+        slack-token: ${{ secrets.SLACK_TOKEN }}
+        slack-channel: "#info-releases"
+        # Deployment metadata (required for commenting)
+        stage: "production"
+        docker-image: "123456789.dkr.ecr.us-east-1.amazonaws.com/my-service"
+        image-tag: ${{ github.sha }}
+        previous-image-tag: ${{ needs.deploy.outputs.previous_tag }}
+        deployment-start-time: ${{ needs.deploy.outputs.start_time }}
+        deployment-end-time: ${{ needs.deploy.outputs.end_time }}
+        deployment-url: "https://argocd.monta.app/applications/argocd/my-service-production"
+        # Enable PR and JIRA commenting (optional)
+        comment-on-prs: true
+        comment-on-jira: true
+```
+
+**Note:** For PR commenting to work properly, use a bot token (e.g., `MONTA_BOT_TOKEN`) instead of `GITHUB_TOKEN` for the `github-token` input. This allows the action to comment on PRs as the bot user.
 
 See further documentation of options in [action.yml](./action.yml)
