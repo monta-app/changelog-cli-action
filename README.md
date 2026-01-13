@@ -32,6 +32,29 @@ The action supports optional deployment metadata that can be included in Slack t
 
 This provides operations teams with deployment information directly in the changelog, making it easier to track what was deployed to which environment, when it was deployed, and enabling quick rollbacks and regression debugging if needed.
 
+## PR Comments on Production Deployments
+
+The action can automatically comment on all PRs included in a production deployment, notifying contributors that their changes have reached production.
+
+**How to Enable:**
+- Set `comment-on-prs: true` in the action configuration
+- Ensure `stage: "production"` is set
+- Provide `deployment-start-time` and `deployment-end-time`
+- Configure Slack output (needed for linking back to changelog)
+
+**Requirements:**
+- GitHub workflow needs `pull-requests: write` permission
+- All deployment timing parameters must be provided
+- Stage must be "production" (case insensitive)
+
+When enabled and all conditions are met, each PR receives a comment with:
+- Release version (tag name)
+- Environment
+- Deployment timing
+- Link to Slack changelog message
+
+If the flag is enabled but conditions aren't met, the tool logs helpful warnings explaining what's missing.
+
 ## Architecture Support
 
 This action automatically detects the runner architecture and downloads the appropriate binary:
@@ -97,6 +120,36 @@ create-change-log:
         deployment-start-time: ${{ needs.deploy.outputs.start_time }}
         deployment-end-time: ${{ needs.deploy.outputs.end_time }}
         deployment-url: "https://argocd.monta.app/applications/argocd/my-service-production"
+```
+
+### Example with PR Comments Enabled
+
+```yaml
+create-change-log:
+  needs: deploy
+  name: Create and publish change log
+  runs-on: ubuntu-latest
+  timeout-minutes: 5
+  permissions:
+    contents: write
+    pull-requests: write  # Required for PR comments
+  steps:
+    - name: Run changelog cli action
+      uses: monta-app/changelog-cli-action@main
+      with:
+        service-name: "My Service"
+        github-release: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        jira-app-name: "myapp"
+        output: "slack"
+        slack-token: ${{ secrets.SLACK_TOKEN }}
+        slack-channel: "#info-releases"
+        # Production deployment with PR comments
+        stage: "production"
+        deployment-start-time: ${{ needs.deploy.outputs.start_time }}
+        deployment-end-time: ${{ needs.deploy.outputs.end_time }}
+        deployment-url: "https://argocd.monta.app/applications/argocd/my-service-production"
+        comment-on-prs: true  # Enable PR commenting
 ```
 
 See further documentation of options in [action.yml](./action.yml)

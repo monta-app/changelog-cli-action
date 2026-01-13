@@ -66,6 +66,10 @@ inputs:
   deployment-url:
     description: "URL to the deployment system (e.g., ArgoCD, Cloudflare)"
     required: false
+  comment-on-prs:
+    description: "Comment on PRs with production deployment information (requires stage=production and deployment times)"
+    required: false
+    default: "false"
 runs:
   using: "composite"
   steps:
@@ -118,5 +122,6 @@ runs:
         CHANGELOG_DEPLOYMENT_START_TIME: ${{ inputs.deployment-start-time }}
         CHANGELOG_DEPLOYMENT_END_TIME: ${{ inputs.deployment-end-time }}
         CHANGELOG_DEPLOYMENT_URL: ${{ inputs.deployment-url }}
+        CHANGELOG_COMMENT_ON_PRS: ${{ inputs.comment-on-prs }}
       run: ./changelog-cli
       shell: bash
