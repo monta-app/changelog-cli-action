@@ -53,6 +53,37 @@ Comments include:
 
 This ensures stakeholders (PMs, designers, wider team) are notified when their work is deployed to production.
 
+## Release Notifications
+
+Independently of `output`, the action can post a short Slack message announcing the release, listing
+dashboards to keep an eye on, and tagging the people who authored, co-authored, or approved the pull
+requests included in it. Setting `release-notify-channel` is what turns this on - it reuses `slack-token`
+to authenticate, so no separate token input is needed.
+
+- **`release-notify-channel`**: Slack channel ID or name to post the notification to
+- **`monitoring-urls`**: Comma-separated list of dashboard/monitoring URLs. Each entry is a bare URL or
+  `Label|https://url` to give it a display label
+
+Contributors are tagged with a real Slack mention when their public GitHub/commit email matches a Slack
+account; otherwise they're linked to their GitHub profile instead. Anyone who only approved (or only
+co-authored via a `Co-authored-by:` trailer) is suffixed with `(approver)` / `(co-author)`. Requires
+`github-token` to resolve PR authors, approvers, and co-authors.
+
+```yaml
+    - name: Run changelog cli action
+      uses: monta-app/changelog-cli-action@main
+      with:
+        service-name: "My Service"
+        github-release: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        output: "slack"
+        slack-token: ${{ secrets.SLACK_TOKEN }}
+        slack-channel: "#info-releases"
+        # Release notification (optional)
+        release-notify-channel: "#my-service-releases"
+        monitoring-urls: "Grafana|https://grafana.monta.app/d/my-service,Sentry|https://sentry.io/my-service"
+```
+
 ## Architecture Support
 
 This action automatically detects the runner architecture and downloads the appropriate binary:
