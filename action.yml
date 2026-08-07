@@ -74,6 +74,12 @@ inputs:
     description: "Comment on JIRA tickets with production deployment information (requires stage=production and deployment times)"
     required: false
     default: 'false'
+  monitoring-urls:
+    description: "Comma-separated list of dashboard/monitoring URLs to include in the release notification. Each entry is a bare URL or 'Label|https://url'"
+    required: false
+  release-notify-channel:
+    description: "Slack channel ID or name to post a release notification to, tagging PR authors/co-authors/approvers and linking the monitoring-urls. Independent of `output` - setting this is what enables the notification. Reuses `slack-token` to authenticate."
+    required: false
 runs:
   using: "composite"
   steps:
@@ -128,5 +134,7 @@ runs:
         CHANGELOG_DEPLOYMENT_URL: ${{ inputs.deployment-url }}
         CHANGELOG_COMMENT_ON_PRS: ${{ inputs.comment-on-prs }}
         CHANGELOG_COMMENT_ON_JIRA: ${{ inputs.comment-on-jira }}
+        CHANGELOG_MONITORING_URLS: ${{ inputs.monitoring-urls }}
+        CHANGELOG_RELEASE_NOTIFY_CHANNEL: ${{ inputs.release-notify-channel }}
       run: ./changelog-cli
       shell: bash
