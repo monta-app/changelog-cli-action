@@ -66,12 +66,19 @@ inputs:
   deployment-url:
     description: "URL to the deployment system (e.g., ArgoCD, Cloudflare)"
     required: false
+  deployments:
+    description: >-
+      JSON array of systems deployed in this release. Each entry: name (required),
+      revision (git SHA), start and end (ISO 8601 UTC, e.g. 2026-08-26T08:19:18Z),
+      status, url. Unknown fields are ignored and malformed input is dropped.
+      Typically the output of the deploy pipeline's rollout wait.
+    required: false
   comment-on-prs:
-    description: "Comment on PRs with production deployment information (requires stage=production and deployment times)"
+    description: "Comment on PRs with production deployment information (requires stage=production or internal and a posted Slack message)"
     required: false
     default: 'false'
   comment-on-jira:
-    description: "Comment on JIRA tickets with production deployment information (requires stage=production and deployment times)"
+    description: "Comment on JIRA tickets with production deployment information (requires stage=production or internal, a posted Slack message, and JIRA credentials)"
     required: false
     default: 'false'
   monitoring-urls:
@@ -132,6 +139,7 @@ runs:
         CHANGELOG_DEPLOYMENT_START_TIME: ${{ inputs.deployment-start-time }}
         CHANGELOG_DEPLOYMENT_END_TIME: ${{ inputs.deployment-end-time }}
         CHANGELOG_DEPLOYMENT_URL: ${{ inputs.deployment-url }}
+        CHANGELOG_DEPLOYMENTS: ${{ inputs.deployments }}
         CHANGELOG_COMMENT_ON_PRS: ${{ inputs.comment-on-prs }}
         CHANGELOG_COMMENT_ON_JIRA: ${{ inputs.comment-on-jira }}
         CHANGELOG_MONITORING_URLS: ${{ inputs.monitoring-urls }}

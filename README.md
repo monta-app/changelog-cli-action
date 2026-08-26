@@ -29,8 +29,29 @@ The action supports optional deployment metadata that can be included in Slack t
 - **Deployment Start Time**: Timestamp when deployment started (ISO 8601 format recommended)
 - **Deployment End Time**: Timestamp when deployment finished (ISO 8601 format recommended)
 - **Deployment URL**: Link to the deployment system (ArgoCD, Cloudflare, etc.)
+- **Deployed Systems** (`deployments`): JSON array of the systems/components shipped in this release — for multi-service releases (see below)
 
 This provides operations teams with deployment information directly in the changelog, making it easier to track what was deployed to which environment, when it was deployed, and enabling quick rollbacks and regression debugging if needed.
+
+### Deployed Systems (`deployments`)
+
+For a release that ships several systems, the `deployments` input takes a JSON array describing each one — typically piped straight from the deploy pipeline's rollout wait. Each entry:
+
+| Field | Required | Format | Example |
+|---|---|---|---|
+| `name` | yes | display name | `hub` |
+| `revision` | no | git commit SHA (full or short) | `80aad1c` |
+| `start` | no | ISO 8601 UTC timestamp | `2026-08-26T08:19:18Z` |
+| `end` | no | ISO 8601 UTC timestamp | `2026-08-26T08:30:59Z` |
+| `status` | no | rollout health | `healthy` |
+| `url` | no | link (e.g. ArgoCD app) | `https://argocd.monta.app/applications/argocd/frontend-hub-production` |
+
+Unknown fields are ignored and malformed JSON is dropped — it never fails the changelog. Non-ISO `start`/`end` values are shown verbatim.
+
+```yaml
+        # e.g. the JSON emitted by the argocd-wait-sync-multi rollout wait
+        deployments: ${{ needs.wait-rollout.outputs.deployments }}
+```
 
 ## PR and JIRA Commenting
 
@@ -39,10 +60,11 @@ The action can automatically comment on PRs and JIRA tickets when deploying to p
 - **Comment on JIRA**: Posts deployment information on all JIRA tickets referenced in commits
 
 **Requirements:**
-- Must set `stage: "production"`
-- Must provide `deployment-start-time` and `deployment-end-time`
-- Slack announcement must be posted (provides link in comments)
+- Must set `stage` to `production` or `internal`
+- Slack announcement must be posted (`output: slack`) — its link is included in the comments
 - For JIRA commenting: Must provide JIRA credentials (`jira-email`, `jira-token`, `jira-app-name`)
+
+Deployment start/end times are optional; when present they add a human-readable deploy window to the comment.
 
 **Comment Format:**
 Comments include:
@@ -172,7 +194,7 @@ create-change-log:
         output: "slack"
         slack-token: ${{ secrets.SLACK_TOKEN }}
         slack-channel: "#info-releases"
-        # Deployment metadata (required for commenting)
+        # Deployment metadata (stage is required for commenting; times are optional)
         stage: "production"
         docker-image: "123456789.dkr.ecr.us-east-1.amazonaws.com/my-service"
         image-tag: ${{ github.sha }}
