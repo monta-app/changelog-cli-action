@@ -81,6 +81,9 @@ inputs:
     description: "Comment on JIRA tickets with production deployment information (requires stage=production or internal, a posted Slack message, and JIRA credentials)"
     required: false
     default: 'false'
+  jira-project-blacklist:
+    description: "Comma-separated JIRA project keys (e.g. CUST,PARTNER) to skip when commenting on JIRA; other tickets in the release are unaffected"
+    required: false
   monitoring-urls:
     description: "Comma-separated list of dashboard/monitoring URLs to include in the release notification. Each entry is a bare URL or 'Label|https://url'"
     required: false
@@ -142,6 +145,7 @@ runs:
         CHANGELOG_DEPLOYMENTS: ${{ inputs.deployments }}
         CHANGELOG_COMMENT_ON_PRS: ${{ inputs.comment-on-prs }}
         CHANGELOG_COMMENT_ON_JIRA: ${{ inputs.comment-on-jira }}
+        CHANGELOG_JIRA_PROJECT_BLACKLIST: ${{ inputs.jira-project-blacklist }}
         CHANGELOG_MONITORING_URLS: ${{ inputs.monitoring-urls }}
         CHANGELOG_RELEASE_NOTIFY_CHANNEL: ${{ inputs.release-notify-channel }}
       run: ./changelog-cli
