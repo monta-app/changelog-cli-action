@@ -75,6 +75,25 @@ Comments include:
 
 This ensures stakeholders (PMs, designers, wider team) are notified when their work is deployed to production.
 
+### Excluding JIRA projects from commenting
+
+Use `jira-project-blacklist` to skip JIRA commenting for specific projects:
+
+- **`jira-project-blacklist`**: Comma-separated JIRA project keys (e.g. `CUST,PARTNER`). Matching is on the
+  project prefix (the `CUST` in `CUST-123`) and is case-insensitive. Tickets in these projects are skipped;
+  other tickets in the same release are still commented on. Skipped tickets still appear in the Slack
+  changelog, GitHub release, and ticket lists — only the JIRA comment is suppressed.
+
+To maintain the list in one place, store it in an organisation- or repository-level Actions variable and
+forward it:
+
+```yaml
+        jira-project-blacklist: ${{ vars.CHANGELOG_JIRA_PROJECT_BLACKLIST }}
+```
+
+> The `vars` context is not accessible inside composite actions, so each caller workflow must forward the
+> variable explicitly as shown above — the action cannot read it on your behalf.
+
 ## Release Notifications
 
 Independently of `output`, the action can post a short Slack message announcing the release, listing
