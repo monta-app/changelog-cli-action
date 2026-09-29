@@ -90,6 +90,9 @@ inputs:
   release-notify-channel:
     description: "Slack channel ID or name to post a release notification to, tagging PR authors/co-authors/approvers and linking the monitoring-urls. Independent of `output` - setting this is what enables the notification. Reuses `slack-token` to authenticate."
     required: false
+  identity-resolve-url:
+    description: "URL of an internal identity-resolution API mapping GitHub logins to Slack user IDs/emails, used to tag release notification contributors more reliably than their public GitHub email. Called as `<url>?github=<login>`. If it is VPN-only, the job must be able to reach it (e.g. join the tailnet first). Unset, unreachable or slow (10s timeout) just falls back to the email lookups."
+    required: false
 runs:
   using: "composite"
   steps:
@@ -148,5 +151,6 @@ runs:
         CHANGELOG_JIRA_PROJECT_BLACKLIST: ${{ inputs.jira-project-blacklist }}
         CHANGELOG_MONITORING_URLS: ${{ inputs.monitoring-urls }}
         CHANGELOG_RELEASE_NOTIFY_CHANNEL: ${{ inputs.release-notify-channel }}
+        CHANGELOG_IDENTITY_RESOLVE_URL: ${{ inputs.identity-resolve-url }}
       run: ./changelog-cli
       shell: bash
