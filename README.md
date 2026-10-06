@@ -104,11 +104,16 @@ to authenticate, so no separate token input is needed.
 - **`release-notify-channel`**: Slack channel ID or name to post the notification to
 - **`monitoring-urls`**: Comma-separated list of dashboard/monitoring URLs. Each entry is a bare URL or
   `Label|https://url` to give it a display label
+- **`identity-resolve-url`**: Optional URL of an internal identity API (called as `<url>?github=<login>`)
+  that maps GitHub logins to Slack user IDs/emails. This is the reliable way to tag people, since few
+  GitHub accounts expose a public email. If it's VPN-only, the job must be able to reach it (for example
+  by joining the tailnet before this step); if it's unset, unreachable or slow (10s timeout), the CLI
+  falls back to email lookups.
 
-Contributors are tagged with a real Slack mention when their public GitHub/commit email matches a Slack
-account; otherwise they're linked to their GitHub profile instead. Anyone who only approved (or only
-co-authored via a `Co-authored-by:` trailer) is suffixed with `(approver)` / `(co-author)`. Requires
-`github-token` to resolve PR authors, approvers, and co-authors.
+Contributors are tagged with a real Slack mention when they can be resolved (via `identity-resolve-url`,
+or failing that a matching public GitHub/commit email); otherwise they're linked to their GitHub profile
+instead. Anyone who only approved (or only co-authored via a `Co-authored-by:` trailer) is suffixed with
+`(approver)` / `(co-author)`. Requires `github-token` to resolve PR authors, approvers, and co-authors.
 
 ```yaml
     - name: Run changelog cli action
