@@ -108,7 +108,8 @@ to authenticate, so no separate token input is needed.
   that maps GitHub logins to Slack user IDs/emails. This is the reliable way to tag people, since few
   GitHub accounts expose a public email. If it's VPN-only, the job must be able to reach it (for example
   by joining the tailnet before this step); if it's unset, unreachable or slow (10s timeout), the CLI
-  falls back to email lookups.
+  falls back to email lookups. When this input is empty, the action uses `CHANGELOG_IDENTITY_RESOLVE_URL`
+  from the runner's environment, which Monta's ARC runners set, so private repos need not pass it.
 
 Contributors are tagged with a real Slack mention when they can be resolved (via `identity-resolve-url`,
 or failing that a matching public GitHub/commit email); otherwise they're linked to their GitHub profile

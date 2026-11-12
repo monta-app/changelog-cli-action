@@ -151,6 +151,10 @@ runs:
         CHANGELOG_JIRA_PROJECT_BLACKLIST: ${{ inputs.jira-project-blacklist }}
         CHANGELOG_MONITORING_URLS: ${{ inputs.monitoring-urls }}
         CHANGELOG_RELEASE_NOTIFY_CHANNEL: ${{ inputs.release-notify-channel }}
-        CHANGELOG_IDENTITY_RESOLVE_URL: ${{ inputs.identity-resolve-url }}
-      run: ./changelog-cli
+        # Not CHANGELOG_IDENTITY_RESOLVE_URL itself: a step env entry would blank out the value
+        # the ARC runners set when the caller passes no input. The input wins when set.
+        INPUT_IDENTITY_RESOLVE_URL: ${{ inputs.identity-resolve-url }}
+      run: |
+        export CHANGELOG_IDENTITY_RESOLVE_URL="${INPUT_IDENTITY_RESOLVE_URL:-${CHANGELOG_IDENTITY_RESOLVE_URL:-}}"
+        ./changelog-cli
       shell: bash
