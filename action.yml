@@ -100,8 +100,15 @@ runs:
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       with:
         fetch-depth: 0
-    - name: Install curl
-      run: sudo apt-get update && sudo apt-get install -y curl git
+    - name: Install curl and git
+      # Monta's runner image and GitHub's hosted runners already have both, so apt only runs on a runner
+      # without them: a release post shouldn't depend on Launchpad or the Ubuntu mirrors being up.
+      run: |
+        if command -v curl >/dev/null && command -v git >/dev/null; then
+          echo "curl and git are already installed"
+        else
+          sudo apt-get update && sudo apt-get install -y curl git
+        fi
       shell: bash
     - name: Download changelog cli
       run: |
@@ -117,7 +124,7 @@ runs:
         fi
 
         echo "Downloading $BINARY_NAME for architecture $ARCH"
-        curl -L -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.9.133/$BINARY_NAME
+        curl -fsSL --retry 5 --retry-all-errors -o changelog-cli https://github.com/monta-app/changelog-cli/releases/download/v1.9.133/$BINARY_NAME
         chmod +x ./changelog-cli
       shell: bash
     - name: Run changelog cli
