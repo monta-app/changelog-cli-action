@@ -12,8 +12,11 @@ inputs:
     required: false
     default: false
   github-token:
-    description: "Github token used for generating releases"
-    required: true
+    description: >-
+      Deprecated and ignored: the action uses the job's own GITHUB_TOKEN (github.token), so drop this input.
+      The calling job needs `contents: write` to create the release and `pull-requests: write` to comment on
+      merged PRs; a job without a `permissions:` block gets both from the repository default.
+    required: false
   github-tag-pattern:
     description: "Regex pattern used for matching tag patterns (group 1 in the pattern should match the 'version') - example `processor-(.*)`"
     required: false
@@ -132,7 +135,10 @@ runs:
         CHANGELOG_SERVICE_NAME: ${{ inputs.service-name }}
         CHANGELOG_GITHUB_RELEASE: ${{ inputs.github-release }}
         CHANGELOG_GITHUB_UPDATE: ${{ inputs.github-update }}
-        CHANGELOG_GITHUB_TOKEN: ${{ inputs.github-token }}
+        # The job's own token, not the input: it was montabot's personal token everywhere (SRE-552). Releases and
+        # PR comments are posted by github-actions[bot], and a release created this way starts no `release:` workflows.
+        CHANGELOG_GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN_INPUT_SET: ${{ inputs.github-token != '' }}
         CHANGELOG_JIRA_APP_NAME: ${{ inputs.jira-app-name }}
         CHANGELOG_JIRA_EMAIL: ${{ inputs.jira-email }}
         CHANGELOG_JIRA_TOKEN: ${{ inputs.jira-token }}
@@ -162,6 +168,9 @@ runs:
         # the ARC runners set when the caller passes no input. The input wins when set.
         INPUT_IDENTITY_RESOLVE_URL: ${{ inputs.identity-resolve-url }}
       run: |
+        if [ "$GITHUB_TOKEN_INPUT_SET" = "true" ]; then
+          echo "::notice title=changelog-cli-action::The github-token input is ignored; the action uses this job's GITHUB_TOKEN. Remove it from the workflow."
+        fi
         export CHANGELOG_IDENTITY_RESOLVE_URL="${INPUT_IDENTITY_RESOLVE_URL:-${CHANGELOG_IDENTITY_RESOLVE_URL:-}}"
         ./changelog-cli
       shell: bash
