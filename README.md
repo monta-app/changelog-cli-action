@@ -114,7 +114,7 @@ to authenticate, so no separate token input is needed.
 Contributors are tagged with a real Slack mention when they can be resolved (via `identity-resolve-url`,
 or failing that a matching public GitHub/commit email); otherwise they're linked to their GitHub profile
 instead. Anyone who only approved (or only co-authored via a `Co-authored-by:` trailer) is suffixed with
-`(approver)` / `(co-author)`. Requires `github-token` to resolve PR authors, approvers, and co-authors.
+`(approver)` / `(co-author)`. PR authors, approvers and co-authors are read with the job's `GITHUB_TOKEN`.
 
 ```yaml
     - name: Run changelog cli action
@@ -122,7 +122,6 @@ instead. Anyone who only approved (or only co-authored via a `Co-authored-by:` t
       with:
         service-name: "My Service"
         github-release: true
-        github-token: ${{ secrets.GITHUB_TOKEN }}
         output: "slack"
         slack-token: ${{ secrets.SLACK_TOKEN }}
         slack-channel: "#info-releases"
@@ -149,6 +148,10 @@ create-change-log:
   name: Create and publish change log
   runs-on: ubuntu-latest
   timeout-minutes: 5
+  # The action uses this job's GITHUB_TOKEN: the release needs contents, PR comments need pull-requests.
+  permissions:
+    contents: write
+    pull-requests: write
   steps:
     - name: Run changelog cli action
       uses: monta-app/changelog-cli-action@main
@@ -157,8 +160,6 @@ create-change-log:
         service-name: "<name of your service>"
         # true if a github release should be created - recommended
         github-release: true
-        # the github token - use a reference to a secret
-        github-token: <token>
         # name of the Jira app used for generating Jira issue links
         jira-app-name: <jira-app>
         # output mode - always 'slack'
@@ -177,13 +178,16 @@ create-change-log:
   name: Create and publish change log
   runs-on: ubuntu-latest
   timeout-minutes: 5
+  # The action uses this job's GITHUB_TOKEN: the release needs contents, PR comments need pull-requests.
+  permissions:
+    contents: write
+    pull-requests: write
   steps:
     - name: Run changelog cli action
       uses: monta-app/changelog-cli-action@main
       with:
         service-name: "My Service"
         github-release: true
-        github-token: ${{ secrets.GITHUB_TOKEN }}
         jira-app-name: "myapp"
         output: "slack"
         slack-token: ${{ secrets.SLACK_TOKEN }}
@@ -206,13 +210,16 @@ create-change-log:
   name: Create and publish change log
   runs-on: ubuntu-latest
   timeout-minutes: 5
+  # The action uses this job's GITHUB_TOKEN: the release needs contents, PR comments need pull-requests.
+  permissions:
+    contents: write
+    pull-requests: write
   steps:
     - name: Run changelog cli action
       uses: monta-app/changelog-cli-action@main
       with:
         service-name: "My Service"
         github-release: true
-        github-token: ${{ secrets.MONTA_BOT_TOKEN }}  # Use bot token for PR comments
         jira-app-name: "myapp"
         jira-email: ${{ secrets.JIRA_EMAIL }}
         jira-token: ${{ secrets.JIRA_TOKEN }}
@@ -232,6 +239,6 @@ create-change-log:
         comment-on-jira: true
 ```
 
-**Note:** For PR commenting to work properly, use a bot token (e.g., `MONTA_BOT_TOKEN`) instead of `GITHUB_TOKEN` for the `github-token` input. This allows the action to comment on PRs as the bot user.
+**Token:** the action always uses the job's own `GITHUB_TOKEN`; the `github-token` input is deprecated and ignored. The job needs `contents: write` (GitHub release) and `pull-requests: write` (PR comments). A job without a `permissions:` block gets both from Monta's repository default; a workflow that restricts its permissions must grant them to this job. Releases and comments are posted by `github-actions[bot]`, and a release created with `GITHUB_TOKEN` doesn't trigger `release:` workflows.
 
 See further documentation of options in [action.yml](./action.yml)
